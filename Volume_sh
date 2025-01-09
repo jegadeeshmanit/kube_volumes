@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy
+  labels:
+    run: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: nginx
+  template:
+    metadata:
+      labels:  # Corrected "lables" to "labels"
+        run: nginx
+    spec:
+      containers:
+        - image: nginx
+          name: nginx
+          volumeMounts:  # Corrected "VolumeMounts" to "volumeMounts"
+            - name: www
+              mountPath: /usr/share/nginx/html
+      volumes:
+        - name: www
+          persistentVolumeClaim:  # Corrected "persistenceVolumeClaim" to "persistentVolumeClaim"
+            claimName: pvc-nfs-pv1
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-nfs-pv1
+  labels:
+    type: local
+spec:
+  storageClassName: manual  # Corrected "StorageClassName" to lowercase
+  capacity:  # Corrected "Capacity" to lowercase
+    storage: 1Gi  # Corrected "Stroage" to "storage"
+  accessModes:  # Corrected "accessMode" to "accessModes"
+    - ReadWriteMany
+  nfs:
+    server: 172.31.39.241  # Corrected IP format
+    path: "/mnt/sak"  # Corrected "mant" to "mnt"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim  # Corrected "PersistenceVolumeClaim" to "PersistentVolumeClaim"
+metadata:
+  name: pvc-nfs-pv1
+spec:
+  storageClassName: manual  # Corrected "StroageClassName" to "storageClassName"
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:  # Corrected "request" to "requests"
+      storage: 500Mi  # Corrected "Stroage" to "storage" and "mi" to "Mi"
